@@ -2,7 +2,9 @@
 .idea/
 .vscode/
 
-# Dependencies
+# Environment
+.env
+cache/
 node_modules/
 
 # Build files
@@ -10,3 +12,5 @@ build/
 
 # OS Files
 .DS_Store
+
+
