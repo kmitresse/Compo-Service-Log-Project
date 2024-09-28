@@ -1,43 +1,37 @@
-import { extname } from "node:path";
-import { ArchiveExtractorFactory, ArchiveType } from "./archive_extractor";
+import { Readable } from "node:stream";
+import axios from "axios";
+import * as fs from "node:fs";
+import { WriteStream } from "node:fs";
 
 class FileService {
-  public static async downloadAndExtract(
-    url: string,
-    output: string
-  ): Promise<void> {
-    const fileType: string = FileService.getFileExtension(url);
 
-    const archiveExtractor = ArchiveExtractorFactory.getExtractor(
-      fileType as ArchiveType
-    );
-
-    console.log(`Downloading ${url}`);
-    const stream = await FileService.getFileStream(url);
-    return archiveExtractor.extract(stream, output);
-  }
-
-  private static async getFileStream(url: string): Promise<ReadableStream> {
-    const response = await fetch(url, {
+  /**
+   * Get the compressed file stream from a given url
+   * @param url - The url of the file
+   * @return Promise<Readable> - The compressed file stream
+   */
+  public static async getFileStream(url: string): Promise<Readable> {
+    return axios({
       method: "GET",
-      headers: {
-        "Content-Type": "application/octet-stream",
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to download file: ${response.statusText}`);
-    }
-
-    if (!response.body) {
-      throw new Error("Response body is not a readable stream");
-    }
-
-    return response.body;
+      url: url,
+      responseType: "stream",
+    }).then((response) => response.data);
   }
 
-  private static getFileExtension(url: string): string {
-    return extname(url).toLowerCase();
+  /**
+   * Create a write stream to a file
+   * @param path - The path of the file
+   */
+  public static createWriteStream(path: string): WriteStream {
+    return fs.createWriteStream(path);
+  }
+
+  /**
+   * Delete a file from the file system
+   * @param cachePath - The path of the file to delete
+   */
+  public static deleteFile(cachePath: string): void {
+    fs.unlinkSync(cachePath);
   }
 }
 

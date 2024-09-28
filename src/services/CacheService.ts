@@ -1,27 +1,30 @@
 import { createHash } from "node:crypto";
 import { join } from "node:path";
-import * as fs from "fs-extra";
+import { existsSync, mkdirSync } from "node:fs";
+
 
 class CacheService {
   public static readonly CACHE_DIR: string = "./cache";
 
-  public static generateCacheKey(url: string): string {
-    return createHash("md5").update(url).digest("hex");
+  public static generateCacheKey(name: string): string {
+    return createHash("md5").update(name).digest("hex");
   }
 
-  public static getCachePath(url: string): string {
-    const cacheKey = this.generateCacheKey(url);
-    return join(CacheService.CACHE_DIR, cacheKey);
+  public static getCachePath(name: string, extension: string = ""): string {
+    const cacheKey = this.generateCacheKey(name);
+    return join(CacheService.CACHE_DIR, `${cacheKey}${extension}`);
   }
 
-  public static isCached(url: string): boolean {
-    const cacheKey = CacheService.generateCacheKey(url);
+  public static isCached(name: string, extension: string = ""): boolean {
+    const cacheKey = CacheService.generateCacheKey(name);
 
-    const cachedPath = join(CacheService.CACHE_DIR, cacheKey);
-    return fs.pathExistsSync(cachedPath);
+    const cachedPath = join(CacheService.CACHE_DIR, `${cacheKey}${extension}`);
+    return existsSync(cachedPath);
   }
 }
 
-fs.ensureDirSync(CacheService.CACHE_DIR);
+if (!existsSync(CacheService.CACHE_DIR)) {
+  mkdirSync(CacheService.CACHE_DIR);
+}
 
 export default CacheService;
