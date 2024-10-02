@@ -4,7 +4,6 @@ import * as fs from "node:fs";
 import { WriteStream } from "node:fs";
 
 class FileService {
-
   /**
    * Get the compressed file stream from a given url
    * @param url - The url of the file

@@ -2,7 +2,6 @@ import { createHash } from "node:crypto";
 import { join } from "node:path";
 import { existsSync, mkdirSync } from "node:fs";
 
-
 class CacheService {
   public static readonly CACHE_DIR: string = "./cache";
 

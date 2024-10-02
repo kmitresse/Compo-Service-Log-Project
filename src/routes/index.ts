@@ -1,5 +1,3 @@
-import randomizeRouter from "./randomize";
-import nudgerRouter from "./data/nudger";
-import openDataRouter from "./data/openfoodfacts";
+import randomize from "./randomize";
 
-export default [randomizeRouter, nudgerRouter, openDataRouter];
+export default randomize;

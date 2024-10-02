@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:biodi="http://bpmn.io/schema/dmn/biodi/2.0" id="definitions_16re855" name="definitions" namespace="http://camunda.org/schema/1.0/dmn" exporter="dmn-js (https://demo.bpmn.io/dmn)" exporterVersion="16.6.2">
+  <decision id="decision_02zhvl1" name="">
+    <decisionTable id="decisionTable_0k2npw5">
+      <input id="input1" label="Web Service" biodi:width="350">
+        <inputExpression id="inputExpression1" typeRef="string">
+          <text></text>
+        </inputExpression>
+      </input>
+      <input id="InputClause_0eqj4n9" label="Barcode (EAN 13)">
+        <inputExpression id="LiteralExpression_1u9u1as" typeRef="string">
+          <text></text>
+        </inputExpression>
+      </input>
+      <output id="output1" label="Country" name="" typeRef="string" />
+      <rule id="DecisionRule_0oklu3j">
+        <inputEntry id="UnaryTests_1bzd25m">
+          <text>"http://localhost:4321/randomize/nudger"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_19vxqzm">
+          <text>string length(?)=13 and starts with(?, "3") and not matches(?, "^3[89]")</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_01ucmmd">
+          <text>"France-Monaco"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_18xknsg">
+        <inputEntry id="UnaryTests_0i7s6qy">
+          <text>"http://localhost:4321/randomize/nudger"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0uflcxg">
+          <text>matches(?, "^46\d{11}$")</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0hpx07f">
+          <text>"Russia"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0jko2nu">
+        <inputEntry id="UnaryTests_1yeeeae">
+          <text>"http://localhost:4321/randomize/nudger"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0u30ape">
+          <text>string length(?)=13 and starts with(?, "560")</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0v8lp29">
+          <text>"Portugal"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1nsy4ze">
+        <inputEntry id="UnaryTests_1gw0lsa">
+          <text>"http://localhost:4321/randomize/nudger"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_15tlrit">
+          <text>
+matches(?, "^9[0-1]{1}\d{10}$")</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1hbw2ir">
+          <text>"AT"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1i8wl7f">
+        <inputEntry id="UnaryTests_1gvjpaa">
+          <text>"http://localhost:4321/randomize/nudger"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_183xj46">
+          <text>matches(?, "^9[0-1]{1}\d{10}$")</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_08v0zvo">
+          <text>"Austria"</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+</definitions>

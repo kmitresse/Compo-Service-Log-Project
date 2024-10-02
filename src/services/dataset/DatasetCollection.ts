@@ -3,12 +3,14 @@ import { ArchiveType } from "../archive";
 import { Dataset, DatasetType } from "./";
 
 class DatasetCollection {
-  static datasets: Dataset<Data>[] = [
+  public static datasets: Dataset<Data>[] = [
     new Dataset<NudgerData>(
+      NudgerData,
+      "nudger",
       "https://files.opendatarchives.fr/data.cquest.org/open4goods/gtin-open-data.zip",
       "open4goods-full-gtin-dataset.csv",
       ArchiveType.ZIP,
-      DatasetType.CSV,
+      DatasetType.CSV
     ),
   ];
 

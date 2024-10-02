@@ -17,11 +17,9 @@ type RawNudgerData = {
 
 class NudgerData implements Data {
   barcode: string;
-  country: string;
 
   constructor(rawData: RawNudgerData) {
     this.barcode = rawData.code;
-    this.country = rawData.gs1_country;
   }
 }
 

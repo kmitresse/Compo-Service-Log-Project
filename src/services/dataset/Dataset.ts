@@ -5,31 +5,39 @@ import FileService from "../FileService";
 import { ArchiveFactory, ArchiveType } from "../archive";
 import { ParserFactory } from "../parser";
 import { DatasetType } from "./";
+import * as fs from "node:fs";
+import * as readline from "node:readline";
 
 /**
  * Represents a dataset that can be loaded and queried
  */
-class Dataset<Data> {
-
+class Dataset<D> {
+  readonly id: string;
   readonly url: string;
   readonly sourceFile: string;
   readonly archiveType: ArchiveType;
   readonly datasetType: DatasetType;
   readonly cachePath: string;
+  private dConstructor: { new (rawData: any): D };
 
   /**
    * Create a new dataset instance
+   * @param id - The unique identifier of the dataset
    * @param url - The URL of the dataset
    * @param sourceFile - The file name of the dataset in the archive
    * @param archiveType - The type of the archive
    * @param datasetType - The type of the dataset
    */
   constructor(
+    dConstructor: new (rawData: any) => D,
+    id: string,
     url: string,
     sourceFile: string,
     archiveType: ArchiveType,
-    datasetType: DatasetType,
+    datasetType: DatasetType
   ) {
+    this.dConstructor = dConstructor;
+    this.id = id;
     this.url = url;
     this.sourceFile = sourceFile;
     this.archiveType = archiveType;
@@ -59,17 +67,49 @@ class Dataset<Data> {
       await FileService.getFileStream(this.url),
       archive.extract(this.sourceFile),
       parser.parse(),
-      FileService.createWriteStream(this.cachePath),
+      FileService.createWriteStream(this.cachePath)
     );
   }
 
   /**
    * Get a number of data entries from the dataset
-   * @param count - The number of data entries to get (default: 10)
+   * @param length - The number of data entries to get (default: 10)
    */
-  public get(count: number = 10): Data[] {
-    // TODO: Implement the get method
-    return [];
+  public get(length: number = 10): Promise<D[]> {
+    return new Promise((resolve, reject) => {
+      let count: number = 0;
+      const results: D[] = [];
+
+      const stream = fs.createReadStream(this.cachePath, { encoding: "utf8" });
+      const rl = readline.createInterface({
+        input: stream,
+        crlfDelay: Infinity,
+      });
+
+      rl.on("line", (line) => {
+        if (count < length) {
+          try {
+            const obj = JSON.parse(line);
+            results.push(new this.dConstructor(obj));
+            count++;
+          } catch (err) {
+            console.error("Erreur lors du parsing de la ligne:", err);
+          }
+        } else {
+          rl.close(); // Fermer le flux si on a atteint les n objets
+        }
+      });
+
+      // Quand le flux est terminé ou a été fermé
+      rl.on("close", () => {
+        resolve(results); // Renvoie les n objets lus
+      });
+
+      // Gérer les erreurs du flux de lecture
+      rl.on("error", (err) => {
+        reject(err);
+      });
+    });
   }
 }
 

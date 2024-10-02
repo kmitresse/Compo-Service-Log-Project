@@ -5,6 +5,6 @@ import { DatasetCollection } from "./services/dataset";
 dotenv.config();
 
 DatasetCollection.loadAll()
-                 .then(() => console.log("All datasets are loaded"))
-                 .then(() => new Server().start())
-                 .catch(console.error);
+  .then(() => console.log("All datasets are loaded"))
+  .then(() => new Server().start())
+  .catch(console.error);
