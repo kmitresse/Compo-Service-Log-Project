@@ -1,4 +1,4 @@
-import { pipeline } from "node:stream";
+import { pipeline, Transform } from "node:stream";
 import { promisify } from "node:util";
 import CacheService from "../CacheService";
 import FileService from "../FileService";
@@ -22,6 +22,7 @@ class Dataset<D> {
 
   /**
    * Create a new dataset instance
+   * @param dConstructor - The constructor of the data class
    * @param id - The unique identifier of the dataset
    * @param url - The URL of the dataset
    * @param sourceFile - The file name of the dataset in the archive
@@ -62,11 +63,21 @@ class Dataset<D> {
 
     const pipelineAsync = promisify(pipeline);
 
+    const self = this;
+
     console.log(`Download: ${this.url}`);
     await pipelineAsync(
       await FileService.getFileStream(this.url),
       archive.extract(this.sourceFile),
       parser.parse(),
+      new Transform({
+        objectMode: true,
+        transform(chunk: object, _, callback) {
+          const data: D = new self.dConstructor(JSON.parse(chunk.toString()));
+          this.push(JSON.stringify(data) + "\n");
+          callback(null, JSON.stringify(data) + "\n");
+        },
+      }),
       FileService.createWriteStream(this.cachePath)
     );
   }
