@@ -1,10 +1,10 @@
-import { Data, NudgerData } from "../data";
+import { NudgerData } from "../data";
 import { ArchiveType } from "../archive";
 import { Dataset, DatasetType } from "./";
 
 class DatasetCollection {
-  public static datasets: Dataset<Data>[] = [
-    new Dataset<NudgerData>(
+  public static datasets: Dataset[] = [
+    new Dataset(
       NudgerData,
       "nudger",
       "https://files.opendatarchives.fr/data.cquest.org/open4goods/gtin-open-data.zip",

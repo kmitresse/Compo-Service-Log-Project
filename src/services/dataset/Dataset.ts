@@ -1,28 +1,31 @@
 import { pipeline, Transform } from "node:stream";
 import { promisify } from "node:util";
+import * as fs from "node:fs";
+import * as readline from "node:readline";
+
 import CacheService from "../CacheService";
 import FileService from "../FileService";
+
 import { ArchiveFactory, ArchiveType } from "../archive";
 import { ParserFactory } from "../parser";
 import { DatasetType } from "./";
-import * as fs from "node:fs";
-import * as readline from "node:readline";
+import { Data } from "../data";
 
 /**
  * Represents a dataset that can be loaded and queried
  */
-class Dataset<D> {
+class Dataset {
   readonly id: string;
   readonly url: string;
   readonly sourceFile: string;
   readonly archiveType: ArchiveType;
   readonly datasetType: DatasetType;
   readonly cachePath: string;
-  private dConstructor: { new (rawData: any): D };
+  private dataConstructor: { new (rawData: object): Data };
 
   /**
    * Create a new dataset instance
-   * @param dConstructor - The constructor of the data class
+   * @param dataConstructor - The constructor of the data class
    * @param id - The unique identifier of the dataset
    * @param url - The URL of the dataset
    * @param sourceFile - The file name of the dataset in the archive
@@ -30,14 +33,14 @@ class Dataset<D> {
    * @param datasetType - The type of the dataset
    */
   constructor(
-    dConstructor: new (rawData: any) => D,
+    dataConstructor: new (rawData: any) => Data,
     id: string,
     url: string,
     sourceFile: string,
     archiveType: ArchiveType,
     datasetType: DatasetType
   ) {
-    this.dConstructor = dConstructor;
+    this.dataConstructor = dataConstructor;
     this.id = id;
     this.url = url;
     this.sourceFile = sourceFile;
@@ -73,7 +76,9 @@ class Dataset<D> {
       new Transform({
         objectMode: true,
         transform(chunk: object, _, callback) {
-          const data: D = new self.dConstructor(JSON.parse(chunk.toString()));
+          const data: Data = new self.dataConstructor(
+            JSON.parse(chunk.toString())
+          );
           this.push(JSON.stringify(data) + "\n");
           callback(null, JSON.stringify(data) + "\n");
         },
@@ -86,10 +91,10 @@ class Dataset<D> {
    * Get a number of data entries from the dataset
    * @param length - The number of data entries to get (default: 10)
    */
-  public get(length: number = 10): Promise<D[]> {
+  public get(length: number = 10): Promise<Data[]> {
     return new Promise((resolve, reject) => {
       let count: number = 0;
-      const results: D[] = [];
+      const results: Data[] = [];
 
       const stream = fs.createReadStream(this.cachePath, { encoding: "utf8" });
       const rl = readline.createInterface({
@@ -100,8 +105,7 @@ class Dataset<D> {
       rl.on("line", (line) => {
         if (count < length) {
           try {
-            const obj = JSON.parse(line);
-            results.push(new this.dConstructor(obj));
+            results.push(JSON.parse(line) as Data);
             count++;
           } catch (err) {
             console.error("Erreur lors du parsing de la ligne:", err);
