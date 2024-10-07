@@ -1,4 +1,4 @@
-import { NudgerData } from "../data";
+import { NudgerData, OpenFoodFactsData } from "../data";
 import { ArchiveType } from "../archive";
 import { Dataset, DatasetType } from "./";
 
@@ -11,6 +11,15 @@ class DatasetCollection {
       file: "open4goods-full-gtin-dataset.csv",
       dataType: NudgerData,
       archiveType: ArchiveType.ZIP,
+      datasetType: DatasetType.CSV,
+    }),
+    new Dataset({
+      id: "openfoodfacts",
+      source:
+        "https://static.openfoodfacts.org/data/en.openfoodfacts.org.products.csv.gz",
+      file: "en.openfoodfacts.org.products.csv",
+      dataType: OpenFoodFactsData,
+      archiveType: ArchiveType.GZIP,
       datasetType: DatasetType.CSV,
     }),
   ];

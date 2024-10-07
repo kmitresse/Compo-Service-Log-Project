@@ -6,7 +6,9 @@ class CsvParser implements Parser {
   public static instance: CsvParser = new CsvParser();
 
   public parse(): Duplex {
-    return csv();
+    return csv({
+      delimiter: "auto",
+    });
   }
 }
 

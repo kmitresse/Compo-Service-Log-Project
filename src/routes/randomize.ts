@@ -1,7 +1,7 @@
 import { Router, Request, Response } from "express";
 import { DatasetCollection } from "../services/dataset";
 import { DMN } from "../services/dmn/DMN";
-import { DMN_Definitions } from "../services/dmn/interfaces/DMN_Definitions";
+import { Definitions } from "../services/dmn/interfaces/";
 import { Data } from "../services/data";
 
 const router = Router();
@@ -22,7 +22,7 @@ router.post("/randomize/:id", async (req: Request, res: Response) => {
   );
   if (!dataset) return res.status(404).json({ status: "NOT_FOUND" });
 
-  const dmn: DMN_Definitions = await DMN.parse(req.body);
+  const dmn: Definitions = await DMN.parse(req.body);
   const schema = DMN.getSchema(dmn);
 
   const data: Data[] = await dataset.get(size, schema);

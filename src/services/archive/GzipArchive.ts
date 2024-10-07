@@ -9,4 +9,5 @@ class GzipArchive implements Archive {
     return createGunzip();
   }
 }
+
 export default GzipArchive;

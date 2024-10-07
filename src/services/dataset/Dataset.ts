@@ -75,8 +75,6 @@ class Dataset {
 
     const pipelineAsync = promisify(pipeline);
 
-    const self = this;
-
     console.log(`Download: ${this.source}`);
     await pipelineAsync(
       await FileService.getFileStream(this.source),
