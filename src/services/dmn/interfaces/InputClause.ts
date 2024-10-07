@@ -1,33 +1,33 @@
 import { ModdleElement } from "./ModdleElement";
 import { DmnError } from "../error/DmnError";
-import { DMN_DecisionTable } from "./DMN_DecisionTable";
+import { DecisionTable } from "./DecisionTable";
 import {
   _Get_type_reference_from_DMN_Definitions,
-  DMN_Definitions,
-} from "./DMN_Definitions";
-import { DMN_Decision } from "./DMN_Decision";
-import { DMN_LiteralExpression } from "./DMN_LiteralExpression";
-import { DMN_UnaryTests } from "./DMN_UnaryTests";
+  Definitions,
+} from "./Definitions";
+import { Decision } from "./Decision";
+import { LiteralExpression } from "./LiteralExpression";
+import { UnaryTests } from "./UnaryTests";
 import {
   _Extract_enumeration_values,
   DMN_type_reference_,
   Is_DMN_type_reference_,
-} from "./DMN_enums";
+} from "./enums";
 
-export const _DMN_InputClause: "dmn:InputClause" = "dmn:InputClause";
+const _DMN_InputClause: "dmn:InputClause" = "dmn:InputClause";
 
-export interface DMN_InputClause extends ModdleElement {
-  $parent: DMN_DecisionTable; // Overriding...
+interface InputClause extends ModdleElement {
+  $parent: DecisionTable; // Overriding...
   $type: typeof _DMN_InputClause;
-  inputExpression?: DMN_LiteralExpression;
-  inputValues?: DMN_UnaryTests;
+  inputExpression?: LiteralExpression;
+  inputValues?: UnaryTests;
   label?: string;
   typeRef?: DMN_type_reference_;
   width?: number;
 }
 
-export function Get_enumeration_from_DMN_InputClause(
-  me: DMN_InputClause
+function Get_enumeration_from_DMN_InputClause(
+  me: InputClause
 ): Array<any> | never {
   // if (Trace)
   //     console.assert(_Is_DMN_InputClause_enumeration_(me), "Get_enumeration_from_DMN_InputClause >> '_Is_DMN_InputClause_enumeration_(me)', untrue");
@@ -35,7 +35,7 @@ export function Get_enumeration_from_DMN_InputClause(
     "inputExpression" in me ? me.inputExpression!.typeRef : undefined;
   if (Is_DMN_type_reference_(type_reference) === false) {
     type_reference = _Get_type_reference_from_DMN_Definitions(
-      me.$parent.$parent.$parent as DMN_Definitions,
+      me.$parent.$parent.$parent as Definitions,
       type_reference
     );
     if (type_reference === undefined)
@@ -70,7 +70,7 @@ export function Get_enumeration_from_DMN_InputClause(
   }
 }
 
-function _Is_DMN_InputClause_enumeration_(me: DMN_InputClause): boolean {
+function _Is_DMN_InputClause_enumeration_(me: InputClause): boolean {
   return (
     "inputExpression" in me &&
     "typeRef" in me.inputExpression! &&
@@ -79,7 +79,7 @@ function _Is_DMN_InputClause_enumeration_(me: DMN_InputClause): boolean {
   );
 }
 
-export function Name_of_DMN_InputClause(me: DMN_InputClause): string {
+function Name_of_DMN_InputClause(me: InputClause): string {
   return "label" in me
     ? me.label!
     : "name" in me
@@ -89,9 +89,9 @@ export function Name_of_DMN_InputClause(me: DMN_InputClause): string {
         : me.id;
 }
 
-export function Type_of_DMN_InputClause(
-  me: DMN_InputClause,
-  decision: DMN_Decision
+function Type_of_DMN_InputClause(
+  me: InputClause,
+  decision: Decision
 ): DMN_type_reference_ | never {
   if (_Is_DMN_InputClause_enumeration_(me))
     return DMN_type_reference_.ENUMERATION;
@@ -127,3 +127,11 @@ export function Type_of_DMN_InputClause(
     Name_of_DMN_InputClause(me)
   );
 }
+
+export {
+  InputClause,
+  _DMN_InputClause,
+  Get_enumeration_from_DMN_InputClause,
+  Name_of_DMN_InputClause,
+  Type_of_DMN_InputClause,
+};

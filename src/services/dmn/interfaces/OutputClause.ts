@@ -1,38 +1,38 @@
 import { ModdleElement } from "./ModdleElement";
 
-import { DMN_DecisionTable } from "./DMN_DecisionTable";
-import { DMN_Decision } from "./DMN_Decision";
+import { DecisionTable } from "./DecisionTable";
+import { Decision } from "./Decision";
 import { DmnError } from "../error/DmnError";
 import {
   _Get_type_reference_from_DMN_Definitions,
-  DMN_Definitions,
-} from "./DMN_Definitions";
-import { DMN_UnaryTests } from "./DMN_UnaryTests";
+  Definitions,
+} from "./Definitions";
+import { UnaryTests } from "./UnaryTests";
 import {
   _Extract_enumeration_values,
   DMN_type_reference_,
   Is_DMN_type_reference_,
-} from "./DMN_enums";
+} from "./enums";
 
 const _DMN_OutputClause: "dmn:OutputClause" = "dmn:OutputClause";
 
-export interface DMN_OutputClause extends ModdleElement {
-  $parent: DMN_DecisionTable; // Overriding...
+interface OutputClause extends ModdleElement {
+  $parent: DecisionTable; // Overriding...
   $type: typeof _DMN_OutputClause;
   label?: string;
-  outputValues?: DMN_UnaryTests;
+  outputValues?: UnaryTests;
   typeRef?: DMN_type_reference_;
 }
 
-export function Get_enumeration_from_DMN_OutputClause(
-  me: DMN_OutputClause
-): Array<any> | never {
+function Get_enumeration_from_DMN_OutputClause(
+  me: OutputClause
+): any[] | never {
   // if (Trace)
   //     console.assert(_Is_DMN_OutputClause_enumeration_(me), "Get_enumeration_from_DMN_OutputClause >> '_Is_DMN_OutputClause_enumeration_(me)', untrue");
   let type_reference = me.typeRef;
   if (Is_DMN_type_reference_(type_reference) === false) {
     type_reference = _Get_type_reference_from_DMN_Definitions(
-      me.$parent.$parent.$parent as DMN_Definitions,
+      me.$parent.$parent.$parent as Definitions,
       type_reference
     );
     if (type_reference === undefined)
@@ -67,14 +67,12 @@ export function Get_enumeration_from_DMN_OutputClause(
   }
 }
 
-export function _Is_DMN_OutputClause_enumeration_(
-  me: DMN_OutputClause
-): boolean {
+function _Is_DMN_OutputClause_enumeration_(me: OutputClause): boolean {
   // 'typeRef' may be missing even though 'outputValues' is present -> "enumeration" anyway...
   return /*'typeRef' in me &&*/ "outputValues" in me;
 }
 
-export function Name_of_DMN_OutputClause(me: DMN_OutputClause): string {
+function Name_of_DMN_OutputClause(me: OutputClause): string {
   return "label" in me
     ? me.label!
     : "name" in me
@@ -86,12 +84,12 @@ export function Name_of_DMN_OutputClause(me: DMN_OutputClause): string {
           : me.id;
 }
 
-export function Type_of_DMN_OutputClause(
-  me: DMN_OutputClause,
-  decision: DMN_Decision,
+function Type_of_DMN_OutputClause(
+  me: OutputClause,
+  decision: Decision,
   primitive_type = false
 ): DMN_type_reference_ | never {
-  if (primitive_type === false && _Is_DMN_OutputClause_enumeration_(me))
+  if (!primitive_type && _Is_DMN_OutputClause_enumeration_(me))
     return DMN_type_reference_.ENUMERATION;
   else if ("typeRef" in me)
     if (Is_DMN_type_reference_(me.typeRef!)) return me.typeRef;
@@ -110,3 +108,12 @@ export function Type_of_DMN_OutputClause(
     Name_of_DMN_OutputClause(me)
   );
 }
+
+export {
+  OutputClause,
+  _DMN_OutputClause,
+  Get_enumeration_from_DMN_OutputClause,
+  _Is_DMN_OutputClause_enumeration_,
+  Name_of_DMN_OutputClause,
+  Type_of_DMN_OutputClause,
+};

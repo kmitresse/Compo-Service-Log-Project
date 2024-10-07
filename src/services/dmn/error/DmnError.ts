@@ -1,5 +1,5 @@
 import { ModdleElement } from "../interfaces/ModdleElement";
-import { Name_of_ModdleElement } from "../interfaces/DMN_enums";
+import { Name_of_ModdleElement } from "../interfaces/enums";
 
 export class DmnError extends Error {
   static readonly Inconsistent_DMN_diagram =

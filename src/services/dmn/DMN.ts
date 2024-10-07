@@ -1,21 +1,24 @@
 import DmnModdle from "dmn-moddle";
-import { DMN_Decision, Is_DMN_Decision } from "./interfaces/DMN_Decision";
-import { Is_DMN_DecisionTable } from "./interfaces/DMN_DecisionTable";
-import { Name_of_DMN_InputClause } from "./interfaces/DMN_InputClause";
-import { Name_of_DMN_OutputClause } from "./interfaces/DMN_OutputClause";
-import { DMN_Definitions } from "./interfaces/DMN_Definitions";
+import {
+  Decision,
+  Is_DMN_Decision,
+  Is_DMN_DecisionTable,
+  Name_of_DMN_InputClause,
+  Name_of_DMN_OutputClause,
+  Definitions,
+} from "./interfaces";
 
 export class DMN {
-  static async parse(xml: string): Promise<DMN_Definitions> {
+  static async parse(xml: string): Promise<Definitions> {
     const { rootElement, warnings } = await new DmnModdle().fromXML(xml);
     if (warnings.length !== 0)
       console.warn(warnings.map((warning: any) => warning.message).join(" * "));
-    return rootElement as DMN_Definitions;
+    return rootElement as Definitions;
   }
 
-  public static getSchema(dmnDefinitions: DMN_Definitions) {
-    const descisions: DMN_Decision[] = dmnDefinitions.drgElement.filter(
-      (element) => Is_DMN_Decision(element)
+  public static getSchema(dmnDefinitions: Definitions) {
+    const descisions: Decision[] = dmnDefinitions.drgElement.filter((element) =>
+      Is_DMN_Decision(element)
     );
     const { input, output } = descisions
       .map((decision) => decision.decisionLogic)

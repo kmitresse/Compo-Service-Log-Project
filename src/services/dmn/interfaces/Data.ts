@@ -1,11 +1,16 @@
-import { Drop_mode, Status_mode } from "./DMN_enums";
+import { Drop_mode, Status_mode } from "./enums";
 
-export interface Data {
+interface Data {
   action: Drop_mode | Status_mode;
   data: Array<Object>;
 }
 
-export function Is_Data(data: Data): data is Data {
+// class Data {
+//   action: Drop_mode | Status_mode;
+//   data: object[];
+// }
+
+function Is_Data(data: Data): boolean {
   return (
     "action" in data &&
     (Object.values(Drop_mode).includes(
@@ -18,3 +23,5 @@ export function Is_Data(data: Data): data is Data {
     Array.isArray(data.data)
   );
 }
+
+export { Data, Is_Data };
