@@ -16,12 +16,12 @@ type RawNudgerData = {
 };
 
 class NudgerData implements Data {
-  input: string;
-  output: string;
+  input: string[];
+  output: string[];
 
-  constructor(rawData: RawNudgerData) {
-    this.input = rawData.code;
-    this.output = rawData.gs1_country;
+  constructor({ code, gs1_country }: RawNudgerData) {
+    this.input = [code];
+    this.output = [gs1_country];
   }
 }
 

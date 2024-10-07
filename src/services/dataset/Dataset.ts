@@ -9,45 +9,54 @@ import FileService from "../FileService";
 import { ArchiveFactory, ArchiveType } from "../archive";
 import { ParserFactory } from "../parser";
 import { DatasetType } from "./";
-import { Data } from "../data";
+import { Data, DataConstructor } from "../data";
+
+type DatasetOptions = {
+  id: string;
+  dataType: DataConstructor<Data>;
+  source: string;
+  file: string;
+  archiveType: ArchiveType;
+  datasetType: DatasetType;
+};
 
 /**
  * Represents a dataset that can be loaded and queried
  */
 class Dataset {
   readonly id: string;
-  readonly url: string;
-  readonly sourceFile: string;
+  readonly source: string;
+  readonly file: string;
   readonly archiveType: ArchiveType;
   readonly datasetType: DatasetType;
   readonly cachePath: string;
-  private dataConstructor: { new (rawData: object): Data };
+  private dataType: DataConstructor<Data>;
 
   /**
    * Create a new dataset instance
-   * @param dataConstructor - The constructor of the data class
    * @param id - The unique identifier of the dataset
-   * @param url - The URL of the dataset
-   * @param sourceFile - The file name of the dataset in the archive
+   * @param source - The URL of the dataset
+   * @param file - The name of the file in the archive
+   * @param dataType - The constructor of the data class
    * @param archiveType - The type of the archive
    * @param datasetType - The type of the dataset
    */
-  constructor(
-    dataConstructor: new (rawData: any) => Data,
-    id: string,
-    url: string,
-    sourceFile: string,
-    archiveType: ArchiveType,
-    datasetType: DatasetType
-  ) {
-    this.dataConstructor = dataConstructor;
+  constructor({
+    id,
+    source,
+    file,
+    dataType,
+    archiveType,
+    datasetType,
+  }: DatasetOptions) {
     this.id = id;
-    this.url = url;
-    this.sourceFile = sourceFile;
+    this.dataType = dataType;
+    this.source = source;
+    this.file = file;
     this.archiveType = archiveType;
     this.datasetType = datasetType;
 
-    this.cachePath = CacheService.getCachePath(this.url, ".json");
+    this.cachePath = CacheService.getCachePath(this.source, ".json");
   }
 
   /**
@@ -56,8 +65,8 @@ class Dataset {
    * @throws {Error} - If the dataset cannot be loaded
    */
   public async load(): Promise<void> {
-    if (CacheService.isCached(this.url, ".json")) {
-      console.log(`Already cached: ${this.url}`);
+    if (CacheService.isCached(this.source, ".json")) {
+      console.log(`Already cached: ${this.source}`);
       return;
     }
 
@@ -68,33 +77,39 @@ class Dataset {
 
     const self = this;
 
-    console.log(`Download: ${this.url}`);
+    console.log(`Download: ${this.source}`);
     await pipelineAsync(
-      await FileService.getFileStream(this.url),
-      archive.extract(this.sourceFile),
+      await FileService.getFileStream(this.source),
+      archive.extract(this.file),
       parser.parse(),
-      new Transform({
-        objectMode: true,
-        transform(chunk: object, _, callback) {
-          const data: Data = new self.dataConstructor(
-            JSON.parse(chunk.toString())
-          );
-          this.push(JSON.stringify(data) + "\n");
-          callback(null, JSON.stringify(data) + "\n");
-        },
-      }),
+      Dataset.transformToData(this.dataType),
       FileService.createWriteStream(this.cachePath)
     );
+  }
+
+  private static transformToData(dataType: DataConstructor<Data>): Transform {
+    return new Transform({
+      objectMode: true,
+      transform(chunk: object, _, callback) {
+        const data: Data = new dataType(JSON.parse(chunk.toString()));
+        this.push(JSON.stringify(data) + "\n");
+        callback(null, JSON.stringify(data) + "\n");
+      },
+    });
   }
 
   /**
    * Get a number of data entries from the dataset
    * @param length - The number of data entries to get (default: 10)
+   * @param schema - Schema of the expected data returned
    */
-  public get(length: number = 10): Promise<Data[]> {
+  public get(
+    length: number = 10,
+    schema: { input: string[] | undefined; output: string[] | undefined }
+  ): Promise<any[]> {
     return new Promise((resolve, reject) => {
       let count: number = 0;
-      const results: Data[] = [];
+      const results: any[] = [];
 
       const stream = fs.createReadStream(this.cachePath, { encoding: "utf8" });
       const rl = readline.createInterface({
@@ -104,18 +119,26 @@ class Dataset {
 
       rl.on("line", (line) => {
         if (count < length) {
-          try {
-            results.push(JSON.parse(line) as Data);
-            count++;
-          } catch (err) {
-            console.error("Erreur lors du parsing de la ligne:", err);
-          }
+          const data: Data = JSON.parse(line) as Data;
+
+          // Create an object with the input and output values according to the schema
+          const obj: any = {};
+          schema.input?.forEach((input: string, index: number) => {
+            obj[input] = data.input[index];
+          });
+          schema.output?.forEach((output, index) => {
+            obj[output] = data.output[index];
+          });
+
+          // Add the object to the results
+          results.push(obj);
+          count++;
         } else {
           rl.close(); // Fermer le flux si on a atteint les n objets
         }
       });
 
-      // Quand le flux est terminé ou a été fermé
+      // Quand le flux est terminé ou a été fermé.
       rl.on("close", () => {
         resolve(results); // Renvoie les n objets lus
       });

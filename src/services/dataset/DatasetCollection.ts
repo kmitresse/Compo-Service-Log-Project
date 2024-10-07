@@ -4,14 +4,15 @@ import { Dataset, DatasetType } from "./";
 
 class DatasetCollection {
   public static datasets: Dataset[] = [
-    new Dataset(
-      NudgerData,
-      "nudger",
-      "https://files.opendatarchives.fr/data.cquest.org/open4goods/gtin-open-data.zip",
-      "open4goods-full-gtin-dataset.csv",
-      ArchiveType.ZIP,
-      DatasetType.CSV
-    ),
+    new Dataset({
+      id: "nudger",
+      source:
+        "https://files.opendatarchives.fr/data.cquest.org/open4goods/gtin-open-data.zip",
+      file: "open4goods-full-gtin-dataset.csv",
+      dataType: NudgerData,
+      archiveType: ArchiveType.ZIP,
+      datasetType: DatasetType.CSV,
+    }),
   ];
 
   public static loadAll(): Promise<void[]> {
