@@ -10,11 +10,9 @@ class FileService {
    * @return Promise<Readable> - The compressed file stream
    */
   public static async getFileStream(url: string): Promise<Readable> {
-    return axios({
-      method: "GET",
-      url: url,
-      responseType: "stream",
-    }).then((response) => response.data);
+    return axios({ method: "GET", url, responseType: "stream" }).then(
+      (response) => response.data
+    );
   }
 
   /**

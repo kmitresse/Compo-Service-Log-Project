@@ -11,13 +11,18 @@ import { ParserFactory } from "../parser";
 import { DatasetType } from "./";
 import { Data, DataConstructor } from "../data";
 
-type DatasetOptions = {
+type DatasetParams = {
   id: string;
   dataType: DataConstructor<Data>;
   source: string;
   file: string;
   archiveType: ArchiveType;
   datasetType: DatasetType;
+  options?: DatasetOptions;
+};
+
+type DatasetOptions = {
+  parser?: any;
 };
 
 /**
@@ -31,6 +36,7 @@ class Dataset {
   readonly datasetType: DatasetType;
   readonly cachePath: string;
   private dataType: DataConstructor<Data>;
+  private options?: DatasetOptions;
 
   /**
    * Create a new dataset instance
@@ -40,6 +46,7 @@ class Dataset {
    * @param dataType - The constructor of the data class
    * @param archiveType - The type of the archive
    * @param datasetType - The type of the dataset
+   * @param options - Additional options for the dataset
    */
   constructor({
     id,
@@ -48,13 +55,15 @@ class Dataset {
     dataType,
     archiveType,
     datasetType,
-  }: DatasetOptions) {
+    options,
+  }: DatasetParams) {
     this.id = id;
     this.dataType = dataType;
     this.source = source;
     this.file = file;
     this.archiveType = archiveType;
     this.datasetType = datasetType;
+    this.options = options;
 
     this.cachePath = CacheService.getCachePath(this.source, ".json");
   }
@@ -79,18 +88,27 @@ class Dataset {
     await pipelineAsync(
       await FileService.getFileStream(this.source),
       archive.extract(this.file),
-      parser.parse(),
+      parser.parse(this.options?.parser),
       Dataset.transformToData(this.dataType),
       FileService.createWriteStream(this.cachePath)
-    );
+    )
+      .then(() => {
+        console.log(`Loaded: ${this.source}`);
+      })
+      .catch((err) => {
+        console.error(`Failed to load dataset: ${this.source}`);
+        FileService.deleteFile(this.cachePath);
+        throw err;
+      });
   }
 
   private static transformToData(dataType: DataConstructor<Data>): Transform {
     return new Transform({
       objectMode: true,
       transform(chunk: object, _, callback) {
-        const data: Data = new dataType(JSON.parse(chunk.toString()));
+        const data: Data = new dataType(chunk);
         this.push(JSON.stringify(data) + "\n");
+
         callback(null, JSON.stringify(data) + "\n");
       },
     });

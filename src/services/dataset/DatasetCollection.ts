@@ -12,6 +12,11 @@ class DatasetCollection {
       dataType: NudgerData,
       archiveType: ArchiveType.ZIP,
       datasetType: DatasetType.CSV,
+      options: {
+        parser: {
+          delimiter: ",",
+        },
+      },
     }),
     new Dataset({
       id: "openfoodfacts",
@@ -21,6 +26,12 @@ class DatasetCollection {
       dataType: OpenFoodFactsData,
       archiveType: ArchiveType.GZIP,
       datasetType: DatasetType.CSV,
+      options: {
+        parser: {
+          delimiter: "\t",
+          quote: null,
+        },
+      },
     }),
   ];
 
