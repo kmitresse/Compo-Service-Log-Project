@@ -1,6 +1,7 @@
-import { NudgerData, OpenFoodFactsData } from "../data";
+import { NudgerData, OpenFoodFactsData, WorldCitiesData } from "../data";
 import { ArchiveType } from "../archive";
-import { Dataset, DatasetType } from "./";
+import { Dataset } from "./";
+import { ParserType } from "../parser";
 
 class DatasetCollection {
   public static datasets: Dataset[] = [
@@ -11,7 +12,7 @@ class DatasetCollection {
       file: "open4goods-full-gtin-dataset.csv",
       dataType: NudgerData,
       archiveType: ArchiveType.ZIP,
-      datasetType: DatasetType.CSV,
+      parserType: ParserType.CSV,
       options: {
         parser: {
           delimiter: ",",
@@ -25,13 +26,22 @@ class DatasetCollection {
       file: "en.openfoodfacts.org.products.csv",
       dataType: OpenFoodFactsData,
       archiveType: ArchiveType.GZIP,
-      datasetType: DatasetType.CSV,
+      parserType: ParserType.CSV,
       options: {
         parser: {
           delimiter: "\t",
           quote: null,
         },
       },
+    }),
+    new Dataset({
+      id: "world-cities",
+      source:
+        "https://raw.githubusercontent.com/datasets/world-cities/refs/heads/main/data/world-cities.csv",
+      file: "world-cities.csv",
+      dataType: WorldCitiesData,
+      archiveType: ArchiveType.NONE,
+      parserType: ParserType.CSV,
     }),
   ];
 

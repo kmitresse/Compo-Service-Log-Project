@@ -1,6 +1,5 @@
 import { Parser } from "./";
 import { Duplex } from "node:stream";
-// import csv from "csvtojson";
 import * as csv from "fast-csv";
 
 class CsvParser implements Parser {
@@ -13,9 +12,6 @@ class CsvParser implements Parser {
       trim: true,
       ...options,
     });
-    // return csv({
-    //   delimiter: "auto",
-    // });
   }
 }
 

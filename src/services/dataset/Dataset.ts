@@ -7,8 +7,7 @@ import CacheService from "../CacheService";
 import FileService from "../FileService";
 
 import { ArchiveFactory, ArchiveType } from "../archive";
-import { ParserFactory } from "../parser";
-import { DatasetType } from "./";
+import { ParserFactory, ParserType } from "../parser";
 import { Data, DataConstructor } from "../data";
 
 type DatasetParams = {
@@ -17,7 +16,7 @@ type DatasetParams = {
   source: string;
   file: string;
   archiveType: ArchiveType;
-  datasetType: DatasetType;
+  parserType: ParserType;
   options?: DatasetOptions;
 };
 
@@ -33,7 +32,7 @@ class Dataset {
   readonly source: string;
   readonly file: string;
   readonly archiveType: ArchiveType;
-  readonly datasetType: DatasetType;
+  readonly parserType: ParserType;
   readonly cachePath: string;
   private dataType: DataConstructor<Data>;
   private options?: DatasetOptions;
@@ -54,7 +53,7 @@ class Dataset {
     file,
     dataType,
     archiveType,
-    datasetType,
+    parserType,
     options,
   }: DatasetParams) {
     this.id = id;
@@ -62,7 +61,7 @@ class Dataset {
     this.source = source;
     this.file = file;
     this.archiveType = archiveType;
-    this.datasetType = datasetType;
+    this.parserType = parserType;
     this.options = options;
 
     this.cachePath = CacheService.getCachePath(this.source, ".json");
@@ -80,7 +79,7 @@ class Dataset {
     }
 
     const archive = ArchiveFactory.getArchive(this.archiveType);
-    const parser = ParserFactory.getParser(this.datasetType);
+    const parser = ParserFactory.getParser(this.parserType);
 
     const pipelineAsync = promisify(pipeline);
 
