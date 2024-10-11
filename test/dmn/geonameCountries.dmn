@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:biodi="http://bpmn.io/schema/dmn/biodi/2.0" id="definitions_01gvi3e" name="definitions" namespace="http://camunda.org/schema/1.0/dmn" exporter="dmn-js (https://demo.bpmn.io/dmn)" exporterVersion="16.6.2">
+  <decision id="decision_1i2kko9" name="">
+    <decisionTable id="decisionTable_0gr70vc">
+      <input id="input1" label="" biodi:width="192">
+        <inputExpression id="inputExpression1" typeRef="number">
+          <text>GeonameID</text>
+        </inputExpression>
+      </input>
+      <output id="output1" label="" name="Country" typeRef="string" />
+      <rule id="DecisionRule_00g5ohx">
+        <description>Cities with geonameId between 2967245 and 3038789 are in France</description>
+        <inputEntry id="UnaryTests_00ykcgn">
+          <text>includes(2967245, 3038789)</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_03k0z7u">
+          <text>"France"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1w8cov6">
+        <description>Cities with geonameId between 3104316 and 3130616 are in Spain</description>
+        <inputEntry id="UnaryTests_1utcn4l">
+          <text>includes(3104316, 3130616)</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1yd23ys">
+          <text>"Spain"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0bqrzts">
+        <description>Cities with geonameId between 5881791 and 6185607 are in Spain</description>
+        <inputEntry id="UnaryTests_0ny4o6c">
+          <text>includes(5881791,6185607)</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1xdxvkd">
+          <text>"Canada"</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+</definitions>
