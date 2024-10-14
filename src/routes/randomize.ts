@@ -7,7 +7,32 @@ import { Data } from "../services/data";
 const router = Router();
 
 router.post("/randomize", (req: Request, res: Response) => {
-  res.status(200).json({ status: "RANDOMIZED", data: [{}] });
+  const size: number = req.query.size
+    ? parseInt(req.query.size as string)
+    : 1000;
+
+  const datasetID = DatasetCollection.datasets.map((dataset) => dataset.id);
+
+  Promise.all(
+    datasetID.map((id) => {
+      const url: URL = new URL(`http://localhost:4321/randomize/${id}`);
+      url.searchParams.append("size", size.toString());
+      return fetch(url, {
+        method: "POST",
+        body: req.body,
+        headers: { "Content-Type": "application/xml" },
+      })
+        .then((response) => response.json())
+        .then((json: any) => json.data);
+    })
+  ).then((r) => {
+    const data = r
+      .flat()
+      .sort(() => Math.random() - 0.5)
+      .slice(0, size);
+
+    res.status(200).json({ status: "RANDOMIZED", data });
+  });
 });
 
 router.post("/randomize/:id", async (req: Request, res: Response) => {
