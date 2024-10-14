@@ -2,12 +2,12 @@
 <definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:biodi="http://bpmn.io/schema/dmn/biodi/2.0" id="definitions_01gvi3e" name="definitions" namespace="http://camunda.org/schema/1.0/dmn" exporter="dmn-js (https://demo.bpmn.io/dmn)" exporterVersion="16.6.2">
   <decision id="decision_1i2kko9" name="">
     <decisionTable id="decisionTable_0gr70vc">
-      <input id="input1" label="" biodi:width="192">
+      <input id="input1" label="GeonameID" biodi:width="192">
         <inputExpression id="inputExpression1" typeRef="number">
           <text>GeonameID</text>
         </inputExpression>
       </input>
-      <output id="output1" label="" name="Country" typeRef="string" />
+      <output id="output1" label="Country" name="Country" typeRef="string" />
       <rule id="DecisionRule_00g5ohx">
         <description>Cities with geonameId between 2967245 and 3038789 are in France</description>
         <inputEntry id="UnaryTests_00ykcgn">
