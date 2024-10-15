@@ -18,6 +18,9 @@
     "noImplicitAny": true,
     /* Completeness */
     "skipLibCheck": true,
-    "typeRoots": ["./src/types", "./node_modules/@types"]
+    "typeRoots": ["./src/types", "./node_modules/@types"],
+    /* Decorators */
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true
   }
 }

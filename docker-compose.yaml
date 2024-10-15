@@ -4,8 +4,6 @@ services:
   mariadb:
     image: mariadb:latest
     restart: "always"
-    #    volumes:
-    #      - ./mariaDB/init:/docker-entrypoint-initdb.d
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: db
