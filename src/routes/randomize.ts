@@ -49,6 +49,7 @@ router.post("/randomize/:id", async (req: Request, res: Response) => {
 
   const dmn: Definitions = await DMN.parse(req.body);
   const schema = DMN.getSchema(dmn);
+  console.log(JSON.stringify(schema, null, 2));
 
   const data: Data[] = await dataset.get(size, schema);
 

@@ -1,6 +1,11 @@
 import "reflect-metadata";
 import { DataSource } from "typeorm";
 import { Log } from "./entity/Log";
+import {
+  NudgerData,
+  OpenFoodFactsData,
+  WorldCitiesData,
+} from "./services/data";
 
 export const AppDataSource = new DataSource({
   type: "mariadb",
@@ -10,8 +15,8 @@ export const AppDataSource = new DataSource({
   password: "root",
   database: "db",
   synchronize: true,
-  logging: true,
-  entities: [Log],
+  logging: false,
+  entities: [Log, NudgerData, OpenFoodFactsData, WorldCitiesData],
   subscribers: [],
   migrations: [],
 });

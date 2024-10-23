@@ -22,8 +22,8 @@ class CacheService {
   }
 }
 
-if (!existsSync(CacheService.CACHE_DIR)) {
-  mkdirSync(CacheService.CACHE_DIR);
-}
+// if (!existsSync(CacheService.CACHE_DIR)) {
+//   mkdirSync(CacheService.CACHE_DIR);
+// }
 
 export default CacheService;

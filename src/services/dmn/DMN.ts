@@ -6,6 +6,8 @@ import {
   Name_of_DMN_InputClause,
   Name_of_DMN_OutputClause,
   Definitions,
+  InputClause,
+  OutputClause,
 } from "./interfaces";
 
 export class DMN {
@@ -17,18 +19,49 @@ export class DMN {
   }
 
   public static getSchema(dmnDefinitions: Definitions) {
-    const descisions: Decision[] = dmnDefinitions.drgElement.filter((element) =>
+    const { inputs, outputs } = this.getInputOutput(dmnDefinitions);
+    const properties = this.getProperties(inputs || [], outputs || []);
+
+    return {
+      type: "object",
+      properties,
+      required: Object.keys(properties),
+    };
+  }
+
+  private static getInputOutput(dmnDefinitions: Definitions) {
+    const decisions: Decision[] = dmnDefinitions.drgElement.filter((element) =>
       Is_DMN_Decision(element)
     );
-    const { input, output } = descisions
+    const { input: inputs, output: outputs } = decisions
       .map((decision) => decision.decisionLogic)
       .filter((decisionLogic) => Is_DMN_DecisionTable(decisionLogic))[0];
 
-    // TODO generate json schema
+    return { inputs, outputs };
+  }
 
-    return {
-      input: input?.map((input) => Name_of_DMN_InputClause(input)),
-      output: output?.map((output) => Name_of_DMN_OutputClause(output)),
-    };
+  private static getProperties(inputs: InputClause[], outputs: OutputClause[]) {
+    let properties = {};
+
+    inputs.forEach((input) => {
+      const name = Name_of_DMN_InputClause(input) as string;
+      const type = input.typeRef || "string";
+      // @ts-ignore
+      properties[name] = {
+        type,
+      };
+    });
+
+    outputs.forEach((output) => {
+      const name = Name_of_DMN_OutputClause(output) as string;
+      const type = output.typeRef || "string";
+
+      // @ts-ignore
+      properties[name] = {
+        type,
+      };
+    });
+
+    return properties;
   }
 }
