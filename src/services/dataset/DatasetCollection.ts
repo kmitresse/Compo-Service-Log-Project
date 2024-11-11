@@ -1,55 +1,59 @@
-import { Data, NudgerData, OpenFoodFactsData, WorldCitiesData } from "../data";
-import { ArchiveType } from "../archive";
 import { Dataset } from "./";
 import { ParserType } from "../parser";
+import WorldCitiesDataTransformer from "../data_transformer/WorldCitiesDataTransformer";
+import { ExtractorType } from "../archive_extractor/ExtractorFactory";
+import NudgerDataTransformer from "../data_transformer/NudgerDataTransformer";
+import OpenfoodfactsDataTransformer from "../data_transformer/OpenfoodfactsDataTransformer";
+import axios from "axios";
 
 class DatasetCollection {
-  public static datasets: Dataset<Data>[] = [
-    // new Dataset({
-    //   id: "nudger",
-    //   source:
-    //     "https://files.opendatarchives.fr/data.cquest.org/open4goods/gtin-open-data.zip",
-    //   file: "open4goods-full-gtin-dataset.csv",
-    //   dataConstructor: NudgerData.fromRaw,
-    //   dataType: NudgerData,
-    //   archiveType: ArchiveType.ZIP,
-    //   parserType: ParserType.CSV,
-    //   options: {
-    //     parser: {
-    //       delimiter: ",",
-    //     },
-    //   },
-    // }),
-    // new Dataset({
-    //   id: "openfoodfacts",
-    //   source:
-    //     "https://static.openfoodfacts.org/data/en.openfoodfacts.org.products.csv.gz",
-    //   file: "en.openfoodfacts.org.products.csv",
-    //   dataConstructor: OpenFoodFactsData.fromRaw,
-    //   dataType: OpenFoodFactsData,
-    //   archiveType: ArchiveType.GZIP,
-    //   parserType: ParserType.CSV,
-    //   options: {
-    //     parser: {
-    //       delimiter: "\t",
-    //       quote: null,
-    //     },
-    //   },
-    // }),
-    new Dataset<WorldCitiesData>({
+  public static datasets: Dataset[] = [
+    new Dataset({
+      id: "nudger",
+      uri: "https://files.opendatarchives.fr/data.cquest.org/open4goods/gtin-open-data.zip",
+      endpoint: "http://localhost:4321/randomize/nudger",
+    })
+      .setExtractor(ExtractorType.ZIP, {
+        file: "open4goods-full-gtin-dataset.csv",
+      })
+      .setParser(ParserType.CSV, {})
+      .setDataTransformer(new NudgerDataTransformer()),
+    new Dataset({
+      id: "openfoodfacts",
+      uri: "https://static.openfoodfacts.org/data/en.openfoodfacts.org.products.csv.gz",
+      endpoint: "http://localhost:4321/randomize/openfoodfacts",
+    })
+      .setExtractor(ExtractorType.GZIP, {
+        file: "en.openfoodfacts.org.products.csv",
+      })
+      .setParser(ParserType.CSV, { delimiter: "\t", quote: null })
+      .setDataTransformer(new OpenfoodfactsDataTransformer()),
+    new Dataset({
       id: "world-cities",
-      source:
-        "https://raw.githubusercontent.com/datasets/world-cities/refs/heads/main/data/world-cities.csv",
-      file: "world-cities.csv",
-      dataConstructor: WorldCitiesData.fromRaw,
-      dataType: WorldCitiesData,
-      archiveType: ArchiveType.NONE,
-      parserType: ParserType.CSV,
-    }),
+      uri: "https://raw.githubusercontent.com/datasets/world-cities/refs/heads/main/data/world-cities.csv",
+      endpoint: "http://localhost:4321/randomize/world-cities",
+    })
+      .setExtractor(ExtractorType.NONE, {})
+      .setParser(ParserType.CSV, {})
+      .setDataTransformer(new WorldCitiesDataTransformer()),
   ];
 
   public static loadAll(): Promise<void[]> {
     return Promise.all(this.datasets.map((dataset) => dataset.load()));
+  }
+
+  public static async getDatasetByMatchingSchema(
+    schema: any
+  ): Promise<string[]> {
+    return await Promise.all(
+      this.datasets.map((dataset) =>
+        axios
+          .post(dataset.endpoint, schema, {
+            params: { size: 1 },
+          })
+          .then((res) => (res.data.data.length > 0 ? dataset.endpoint : null))
+      )
+    ).then((endpoints) => endpoints.filter((endpoint) => endpoint !== null));
   }
 }
 

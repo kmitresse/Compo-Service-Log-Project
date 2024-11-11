@@ -1,7 +1,7 @@
 import express from "express";
 import routes from "./routes";
 import { createServer } from "node:http";
-import { logger, xmlBodyParser } from "./middlewares";
+import { bodyToSchema, logger, xmlBodyParser } from "./middlewares";
 
 export default class Server {
   private readonly app: express.Application;
@@ -9,7 +9,7 @@ export default class Server {
 
   constructor() {
     this.app = express();
-    this.app.use(express.json(), xmlBodyParser, logger, routes);
+    this.app.use(express.json(), xmlBodyParser, bodyToSchema, logger, routes);
   }
 
   public start() {
