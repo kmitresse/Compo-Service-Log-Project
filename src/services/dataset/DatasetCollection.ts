@@ -4,7 +4,6 @@ import WorldCitiesDataTransformer from "../data_transformer/WorldCitiesDataTrans
 import { ExtractorType } from "../archive_extractor/ExtractorFactory";
 import NudgerDataTransformer from "../data_transformer/NudgerDataTransformer";
 import OpenfoodfactsDataTransformer from "../data_transformer/OpenfoodfactsDataTransformer";
-import axios from "axios";
 
 class DatasetCollection {
   public static datasets: Dataset[] = [
@@ -42,19 +41,19 @@ class DatasetCollection {
     return Promise.all(this.datasets.map((dataset) => dataset.load()));
   }
 
-  public static async getDatasetByMatchingSchema(
-    schema: any
-  ): Promise<string[]> {
-    return await Promise.all(
-      this.datasets.map((dataset) =>
-        axios
-          .post(dataset.endpoint, schema, {
-            params: { size: 1 },
-          })
-          .then((res) => (res.data.data.length > 0 ? dataset.endpoint : null))
-      )
-    ).then((endpoints) => endpoints.filter((endpoint) => endpoint !== null));
-  }
+  // public static async getDatasetByMatchingSchema(
+  //   schema: any
+  // ): Promise<string[]> {
+  //   return await Promise.all(
+  //     this.datasets.map((dataset) =>
+  //       axios
+  //         .post(dataset.endpoint, schema, {
+  //           params: { size: 1 },
+  //         })
+  //         .then((res) => (res.data.data.length > 0 ? dataset.endpoint : null))
+  //     )
+  //   ).then((endpoints) => endpoints.filter((endpoint) => endpoint !== null));
+  // }
 }
 
 export default DatasetCollection;

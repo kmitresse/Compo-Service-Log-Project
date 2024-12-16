@@ -121,7 +121,7 @@ export default class Dataset {
       );
   }
 
-  async get(length: number = 10, schema: any) {
+  async get(length: number, schema: any) {
     const db = await getDatabaseConnexion();
 
     // Convert JSON schema to projection

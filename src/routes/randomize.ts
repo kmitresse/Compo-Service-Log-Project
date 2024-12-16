@@ -4,40 +4,28 @@ import axios from "axios";
 
 const router = Router();
 
-router.post("/randomize", (req: Request, res: Response) => {
+router.post("/randomize", async (req: Request, res: Response) => {
   const size: number = req.query.size ? parseInt(req.query.size as string) : 10;
 
-  DatasetCollection.getDatasetByMatchingSchema(req.body)
-    .then((endpoints) => {
-      // Split evenly the size between the datasets
-      const sizePerDataset = Math.floor(size / endpoints.length);
+  const data = await Promise.all(
+    DatasetCollection.datasets.map((dataset) =>
+      axios
+        .post(dataset.endpoint, req.body, { params: { size } })
+        .then((res) => res.data.data)
+    )
+  ).then((r) =>
+    r
+      .flat()
+      .sort(() => Math.random() - 0.5)
+      .slice(0, size)
+  );
 
-      return Promise.all(
-        endpoints.map(async (endpoint) => {
-          const params = { size: sizePerDataset };
-
-          return axios
-            .post(endpoint, req.body, { params })
-            .then((res) => res.data.data);
-        })
-      );
-    })
-    .then((r) => {
-      const data = r
-        .flat()
-        .sort(() => Math.random() - 0.5)
-        .slice(0, size);
-
-      res.status(200).json({ status: "RANDOMIZED", data });
-    });
+  res.status(200).json({ status: "RANDOMIZED", data });
 });
 
 router.post("/randomize/:id", async (req: Request, res: Response) => {
   const { id } = req.params;
-
-  const size: number | undefined = req.query.size
-    ? parseInt(req.query.size as string)
-    : undefined;
+  const size: number = req.query.size ? parseInt(req.query.size as string) : 10;
 
   const dataset = DatasetCollection.datasets.find(
     (dataset) => dataset.id === id
