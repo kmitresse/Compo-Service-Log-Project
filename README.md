@@ -1,103 +1,132 @@
-# Mit-Vab-Compo-Service-Logiciel
+# Projet CSL
 
-## Getting started
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+> Ce projet utilise les micro-services pour filtrer et collecter des données
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+## Prérequis
 
-## Add your files
+Pour pouvoir lancer ce projet vous devez avoir installé les outils suivants :
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+- [Docker Desktop](#installation-de-docker-desktop)
+- [Insonmia](#installation-de-insomnia)
 
+Assurez-vous d'avoir les ports `3000`, `3306` et `27017` de disponible sur votre machine.
+
+### Installation de Docker Desktop
+
+Docker Desktop est un outil qui permet de gérer des conteneurs Docker sur votre
+machine.
+Il est disponible pour Windows, MacOS et Linux.
+
+A l'installation de Docker Desktop : Docker engine et Docker compose seront
+installés.
+De plus Docker Desktop installe une interface graphique pour gérer les
+conteneurs.
+
+Pour installer Docker Desktop sur votre machine vous pouvez suivre les
+instructions sur
+le site officiel de Docker :
+[https://docs.docker.com/get-docker/](https://docs.docker.com/get-docker/)
+
+Une fois Docker Desktop installé, vous pouvez vérifier que tout fonctionne
+correctement
+en ouvrant un terminal et en tapant les commandes suivantes :
+
+```sh
+  docker --version
+``` 
+
+```sh
+docker-compose --version
 ```
-cd existing_repo
-git remote add origin https://git.univ-pau.fr/kmitresse/project-service-log.git
-git branch -M main
-git push -uf origin main
+
+Vous pouvez également vérifier que Docker Desktop est bien lancé en ouvrant
+l'interface graphique.
+
+![Docker Desktop](.readme/docker-desktop.png)
+
+### Installation de Insomnia
+
+Insomnia est un outil qui permet de tester des API REST.
+Il est disponible pour Windows, MacOS et Linux.
+
+Pour installer Insomnia sur votre machine vous pouvez suivre les instructions
+sur
+le site officiel de Insomnia : https://insomnia.rest/download
+
+Une fois Insomnia installé, vous pouvez le lancer et vous obtiendrez cette
+interface :
+![Insomnia](.readme/insomnia.png)
+
+Vous pouvez ensuite importer le fichier de test `2024-12-17.json` qui se trouve
+dans le dossier `app/test/insomnia/`.
+
+Pour cela, cliquez sur le bouton `import`
+![Import button](.readme/insomnia-import-1.png)
+
+Cliquez sur `+ File` puis `Choose a file` et sélectionnez le fichier
+`2024-12-17.json` et cliquez sur `open` ou `Ouvrir`.
+![Search for file](.readme/insomnia-import-2.png)
+
+Enfin cliquez sur `Scan` pour scanner le fichier à importer puis sur `Import`.
+![Scan file](.readme/insomnia-import-3.png)
+![Import file](.readme/insomnia-import-4.png)
+
+Et voilà vous avez importé le fichier de test ! 🎉
+
+Une nouvelle collection est apparue, vous pouvez la sélectionner pour voir les
+requêtes qui ont été importées.
+![Collection](.readme/insomnia-import-5.png)
+![Requests](.readme/insomnia-import-6.png)
+
+## Lancez le projet
+
+Pour lancer le projet, ouvrez votre terminal et rendez-vous à la racine du
+projet.
+Ensuite exécutez la commande suivante :
+
+```sh
+docker-compose -up -d --build
 ```
 
-## Integrate with your tools
+Cette commande va construire les images Docker et lancer les conteneurs.
+En effet, cette application contient 3 services :
 
-- [ ] [Set up project integrations](https://git.univ-pau.fr/kmitresse/project-service-log/-/settings/integrations)
+- `app` : expose l'API REST (sur le port `3000`)
+- `mongodb` : contient la base de données qui va stocker les données filtrées (sur le port `27017`)
+- `mariadb`: contient la base de donnée des logs (sur le port `3306`)
 
-## Collaborate with your team
+Vous pouvez vérifier que les conteneurs sont bien lancés en exécutant la
+commande suivante :
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+```sh
+docker ps
+```
 
-## Test and Deploy
+Vous devriez voir les 3 conteneurs lancés.
+```
+CONTAINER ID   IMAGE                           COMMAND                  CREATED       STATUS       PORTS                    NAMES
+7d90351a5dd4   compo-service-log-project-app   "docker-entrypoint.s…"   2 hours ago   Up 2 hours   0.0.0.0:3000->3000/tcp   app
+f77729fee31b   mongo                           "docker-entrypoint.s…"   2 hours ago   Up 2 hours   27017/tcp                mongodb
+f59177f86802   mariadb                         "docker-entrypoint.s…"   2 hours ago   Up 2 hours   0.0.0.0:3306->3306/tcp   mariadb
+```
 
-Use the built-in continuous integration in GitLab.
+Vous pouvez également vérifier que les conteneurs sont bien lancés en ouvrant l'interface graphique de Docker Desktop.
+![Docker Desktop avec les conteneurs de lancés](.readme/docker-desktop-running-containers.png)
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+Il se peut que le conteneur `app` redémarre plusieurs fois avant de se stabiliser.
+Cela est dû au fait que le conteneur `app` démarre plus vite que les conteneurs `mongodb` et `mariadb`.
+Et celui-ci essaye de se connecter aux bases de données mais elles ne sont pas encore prêtes.
 
----
+## Tester l'API
 
-# Editing this README
+Pour tester l'API rendez-vous sur Insomnia avec la collection importée et
+assurez-vous que les conteneurs sont bien lancés.
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
 
-## Suggestions for a good README
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+## Autheurs
 
-## Name
-
-Choose a self-explaining name for your project.
-
-## Description
-
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-
-Show your appreciation to those who have contributed to the project.
-
-## License
-
-For open source projects, say how it is licensed.
-
-## Project status
-
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+- 👤 [Kevin Mitressé](https://github.com/kmitresse)
+- 👤 [Lucàs Vabre](https://github.com/LucasVbr)

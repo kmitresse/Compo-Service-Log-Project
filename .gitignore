@@ -7,8 +7,9 @@
 cache/
 node_modules/
 
-# Docker
-docker/
+# Database
+mariadb/data/
+mongodb/data/
 
 # Build files
 build/

@@ -1,20 +1,49 @@
-# Use root/example as user/password credentials
 version: "3.1"
 
 services:
-  mongo:
+
+  app:
+    container_name: app
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+      args:
+        APP_ENV: ${APP_ENV}
+        APP_PORT: ${APP_PORT}
+        MARIADB_HOST: ${MARIADB_HOST}
+        MARIADB_PORT: ${MARIADB_PORT}
+        MARIADB_USER: ${MARIADB_USER}
+        MARIADB_PASSWORD: ${MARIADB_PASSWORD}
+        MARIADB_DATABASE: ${MARIADB_DATABASE}
+        MONGODB_HOST: ${MONGODB_HOST}
+        MONGODB_PORT: ${MONGODB_PORT}
+        MONGODB_USER: ${MONGODB_USER}
+        MONGODB_PASSWORD: ${MONGODB_PASSWORD}
+        MONGODB_DATABASE: ${MONGODB_DATABASE}
+    restart: "on-failure"
+    volumes:
+        - ./app/src:/app/src
+    depends_on:
+      - mongodb
+      - mariadb
+    networks:
+      - app_network
+    ports:
+      - "${APP_PORT}:${APP_PORT}"
+
+  mongodb:
     image: mongo
-    container_name: data-db
+    container_name: mongodb
     restart: "no"
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: root
-      MONGO_INITDB_DATABASE: db
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGODB_DATABASE}
     volumes:
-      - ./docker/mongodb/db:/data/db
-      - ./docker/mongodb/logs:/var/log/mongodb
+      - ./mongodb/data:/data/db
+      - ./mongodb/logs:/var/log/mongodb
     command:
-      ["mongod", "--logpath", "/var/log/mongodb/mongodb.log", "--logappend"]
+      [ "mongod", "--logpath", "/var/log/mongodb/mongodb.log", "--logappend" ]
     deploy:
       resources:
         limits:
@@ -23,24 +52,26 @@ services:
         reservations:
           memory: 2g
     ports:
-      - "27017:27017"
+      - "${MONGODB_PORT}:27017"
+    networks:
+      - app_network
 
   mariadb:
     image: mariadb
-    container_name: log-db
+    container_name: mariadb
     restart: "no"
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: db
-      MYSQL_USER: user
-      MYSQL_PASSWORD: example
-    ports:
-      - "3306:3306"
+      MYSQL_DATABASE: ${MARIADB_DATABASE}
+      MYSQL_USER: ${MARIADB_USER}
+      MYSQL_PASSWORD: ${MARIADB_PASSWORD}
     volumes:
-      - ./docker/mariadb/db:/var/lib/mysql
+      - ./mariadb/data:/var/lib/mysql
+    networks:
+      - app_network
+    ports:
+      - "${MARIADB_PORT}:3306"
 
-volumes:
-  mongodb_data:
-    driver: local
-  mariadb_data:
-    driver: local
+networks:
+  app_network:
+    driver: bridge
