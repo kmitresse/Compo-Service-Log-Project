@@ -65,13 +65,11 @@ De plus Docker Desktop installe une interface graphique pour gérer les
 conteneurs.
 
 Pour installer Docker Desktop sur votre machine vous pouvez suivre les
-instructions sur
-le site officiel de Docker :
+instructions sur le site officiel de Docker :
 [https://docs.docker.com/get-docker/](https://docs.docker.com/get-docker/)
 
 Une fois Docker Desktop installé, vous pouvez vérifier que tout fonctionne
-correctement
-en ouvrant un terminal et en tapant les commandes suivantes :
+correctement en ouvrant un terminal et en tapant les commandes suivantes :
 
 ```sh
   docker --version
@@ -127,7 +125,7 @@ projet.
 Ensuite exécutez la commande suivante :
 
 ```sh
-docker-compose -up -d --build
+docker-compose up -d --build
 ```
 
 Cette commande va construire les images Docker et lancer les conteneurs.
@@ -198,6 +196,17 @@ sélectionner `JSON` à la place de `XML`
 et mettre le contenu de votre JSON dans le champ `Body`.
 
 ![Modifier la requête JSON](.readme/insomnia-test-3.png)
+
+## Vérifier les logs
+Les logs API sont stockés dans la base de données MariaDB.
+Pour les consulter, il suffit de s'y connecter depuis le conteneur docker mariadb. (Onglet ___Exec___ de Docker Desktop)
+
+```sh
+bash
+mariadb -u user -p # le mot de passe est disponible dans le fichier .env
+use db;
+select * from log;
+```
 
 ## Arrêter le projet
 
