@@ -41,9 +41,6 @@ services:
       MONGO_INITDB_DATABASE: ${MONGODB_DATABASE}
     volumes:
       - ./mongodb/data:/data/db
-      - ./mongodb/logs:/var/log/mongodb
-    command:
-      [ "mongod", "--logpath", "/var/log/mongodb/mongodb.log", "--logappend" ]
     deploy:
       resources:
         limits:
